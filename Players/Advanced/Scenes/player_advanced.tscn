@@ -1,0 +1,158 @@
+[gd_scene load_steps=13 format=3 uid="uid://7otojptrjqyh"]
+
+[ext_resource type="Script" path="res://Scripts/player_basic.gd" id="1_2dnp5"]
+[ext_resource type="PackedScene" uid="uid://by7g6qtybner8" path="res://Scenes/InteractRay.tscn" id="2_8v4rn"]
+[ext_resource type="Texture2D" uid="uid://c4p7qked3qsh5" path="res://Textures/Ui_textures/Interacting.png" id="3_2h74o"]
+[ext_resource type="PackedScene" uid="uid://dmr0fcamx7t56" path="res://addons/virtual_joystick/virtual_joystick_scene.tscn" id="4_gxihk"]
+[ext_resource type="Texture2D" uid="uid://c0uhr581x0exw" path="res://Textures/Ui_textures/Running.png" id="5_7egum"]
+[ext_resource type="Texture2D" uid="uid://b7xgh35yu4xe3" path="res://Textures/Ui_textures/Standing.png" id="6_f2hms"]
+[ext_resource type="Texture2D" uid="uid://dicf0hn3ftm0i" path="res://Textures/Ui_textures/Crouching.png" id="7_7pwd8"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_adtdj"]
+radius = 0.4
+height = 3.0
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_d4qk7"]
+radius = 0.4
+height = 1.5
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_tibt7"]
+size = Vector3(0.035, 0.035, 0.035)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_l61ck"]
+size = Vector2(290, 330)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_0tsr7"]
+size = Vector2(280, 400)
+
+[node name="Player_Advanced" type="CharacterBody3D"]
+script = ExtResource("1_2dnp5")
+
+[node name="standing" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("CapsuleShape3D_adtdj")
+
+[node name="crouching" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.248946, 0)
+shape = SubResource("CapsuleShape3D_d4qk7")
+disabled = true
+
+[node name="head_check" type="RayCast3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02614, 0)
+target_position = Vector3(0, 1.7, 0)
+
+[node name="head" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.4, 0)
+
+[node name="Camera3D" type="Camera3D" parent="head"]
+
+[node name="OBJ_PICKER" type="Node3D" parent="head/Camera3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.912085, -0.344018, 0.0131712)
+
+[node name="InteractRay" parent="head/Camera3D/OBJ_PICKER" instance=ExtResource("2_8v4rn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.918789, 0.357174, -0.1005)
+target_position = Vector3(0, 0, -3)
+
+[node name="Marker3D" type="Marker3D" parent="head/Camera3D/OBJ_PICKER"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.801644)
+
+[node name="Joint3D" type="Generic6DOFJoint3D" parent="head/Camera3D/OBJ_PICKER"]
+node_a = NodePath("../Body3D")
+linear_limit_x/enabled = false
+linear_limit_y/enabled = false
+linear_limit_z/enabled = false
+
+[node name="Body3D" type="StaticBody3D" parent="head/Camera3D/OBJ_PICKER"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.800865)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="head/Camera3D/OBJ_PICKER/Body3D"]
+shape = SubResource("BoxShape3D_tibt7")
+disabled = true
+
+[node name="climb" type="Node3D" parent="."]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 0.626154, -0.0132674)
+
+[node name="climb_cast" type="RayCast3D" parent="climb"]
+target_position = Vector3(1.5, 0, 0)
+
+[node name="object_info_Label" type="Label" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -40.0
+offset_top = 49.0
+offset_right = 48.0
+offset_bottom = 72.0
+grow_horizontal = 2
+grow_vertical = 2
+metadata/_edit_use_anchors_ = true
+
+[node name="Virtual Joystick" parent="." instance=ExtResource("4_gxihk")]
+offset_top = -300.0
+offset_bottom = 0.0
+action_left = "Left"
+action_right = "Right"
+action_up = "Forward"
+action_down = "Backward"
+
+[node name="Sprint" type="TouchScreenButton" parent="Virtual Joystick"]
+position = Vector2(0, -319)
+scale = Vector2(0.48, 0.469)
+texture_normal = ExtResource("5_7egum")
+shape = SubResource("RectangleShape2D_l61ck")
+passby_press = true
+action = "Sprint"
+
+[node name="crouch" type="TouchScreenButton" parent="Virtual Joystick"]
+position = Vector2(1136, -348)
+scale = Vector2(0.48, 0.472)
+texture_normal = ExtResource("6_f2hms")
+texture_pressed = ExtResource("7_7pwd8")
+shape = SubResource("RectangleShape2D_0tsr7")
+action = "Crouch"
+
+[node name="crawl" type="TouchScreenButton" parent="Virtual Joystick"]
+position = Vector2(1136, -123)
+scale = Vector2(0.48, 0.472)
+texture_normal = ExtResource("7_7pwd8")
+texture_pressed = ExtResource("6_f2hms")
+shape = SubResource("RectangleShape2D_0tsr7")
+action = "Crawl"
+
+[node name="interaction_png" type="TouchScreenButton" parent="."]
+position = Vector2(864, 432)
+scale = Vector2(0.463259, 0.520384)
+texture_normal = ExtResource("3_2h74o")
+shape_centered = false
+action = "Interact"
+
+[node name="interaction_png2" type="TouchScreenButton" parent="."]
+position = Vector2(864, 432)
+scale = Vector2(0.463259, 0.520384)
+texture_normal = ExtResource("3_2h74o")
+shape_centered = false
+action = "interact"
+
+[node name="un-interact_button" type="TouchScreenButton" parent="."]
+position = Vector2(448, 416)
+scale = Vector2(0.463259, 0.520384)
+texture_normal = ExtResource("3_2h74o")
+shape_centered = false
+action = "F"
+
+[node name="Label" type="Label" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -11.5
+offset_right = 20.0
+offset_bottom = 11.5
+grow_horizontal = 2
+grow_vertical = 2
+text = "."
+horizontal_alignment = 1
